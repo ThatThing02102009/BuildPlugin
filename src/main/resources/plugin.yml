@@ -1,0 +1,21 @@
+name: AfkShards
+version: 2.0-ADVANCED
+main: vn.ThatThingDev.Main
+api-version: 1.21
+authors: [ThatThingDev]
+depend: [PlaceholderAPI]
+
+commands:
+  shards:
+    description: Lệnh quản lý Shards
+    aliases: [shard, s]
+    usage: /shards [help/bal/pay/admin]
+    permission: shards.use
+
+permissions:
+  shards.admin:
+    description: Quyền quản trị viên
+    default: op
+  shards.use:
+    description: Quyền người chơi
+    default: true

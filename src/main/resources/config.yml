@@ -1,0 +1,53 @@
+# ==============================================================================
+#      AFK SHARDS - ADVANCED EDITION v2.0
+#      Code optimized by: ThatThingDev
+# ==============================================================================
+
+mysql:
+  host: "intel.lumine.buzz"
+  port: "3306"
+  database: "s162_AfkShards"
+  user: "u162_X1hHVdBfGs"
+  password: "Kl7VLnx@JwkWIsNt^hudxRRY"
+  pool-size: 10
+  connection-timeout: 30000
+
+# [AFK REWARD] - Thưởng khi treo máy
+afk:
+  # Thời gian nhận thưởng (giây). 300s = 5 phút.
+  interval-seconds: 300
+  base-amount: 1.0
+  # Rank Booster: Quyền 'shards.booster.<tên>' sẽ được nhân tiền
+  multipliers:
+    vip: 1.5
+    mvp: 2.0
+    smp_owner: 3.0
+
+# [PVP REWARD] - Thưởng khi giết người
+kill-reward:
+  enabled: true
+  # Chặn farm clone trùng IP (BẮT BUỘC BẬT để chống exploit)
+  prevent-same-ip: true
+  # Thời gian chờ để nhận thưởng lại từ 1 người (giây). 600s = 10 phút.
+  cooldown-seconds: 600
+
+  base-amount: 5.0
+  # Thưởng thêm nếu nạn nhân mặc full set giáp này (Khuyến khích giết VIP)
+  armor-bonus:
+    LEATHER: 1.0
+    IRON: 3.0
+    DIAMOND: 10.0
+    NETHERITE: 20.0
+
+messages:
+  prefix: "&8[&6AfkShards&8] "
+  no-permission: "&cBạn không có quyền!"
+  balance: "&7Số dư Shards: &e%amount%"
+  afk-receive: "&a+ %amount% Shards &7(Treo máy)"
+  kill-receive: "&a+ %amount% Shards &7(Giết %victim%)"
+  kill-cooldown: "&cChờ &e%time%s &cnữa mới được farm người này!"
+  kill-same-ip: "&cPhát hiện gian lận! Không thưởng khi giết clone trùng IP."
+  admin-set: "&aĐã set Shards của %player% thành %amount%"
+  admin-give: "&aĐã cộng %amount% Shards cho %player%"
+  admin-withdraw: "&aĐã trừ %amount% Shards của %player%"
+  reload: "&aConfig đã được tải lại thành công!"
