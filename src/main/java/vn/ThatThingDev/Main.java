@@ -1,7 +1,7 @@
 package vn.ThatThingDev;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.PluginCommand; // Import thêm cái này
+import org.bukkit.command.PluginCommand;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -18,62 +18,64 @@ public class Main extends JavaPlugin implements Listener {
 
     private DatabaseManager databaseManager;
     private ShardManager shardManager;
+    private AfkTask afkTask;
 
     @Override
     public void onEnable() {
-        // 1. Config
         saveDefaultConfig();
 
-        // 2. Database
+        // 1. Database Init (Bây giờ đã trả về boolean nên dòng if này hoạt động OK)
         databaseManager = new DatabaseManager(this);
-        databaseManager.initialize();
-
-        // 3. Manager
-        shardManager = new ShardManager(databaseManager);
-
-        // 4. Đăng ký Lệnh (Fix triệt để cảnh báo NullPointer)
-        PluginCommand shardsCmd = getCommand("shards");
-        if (shardsCmd != null) {
-            shardsCmd.setExecutor(new ShardCommand(this));
-        } else {
-            getLogger().severe("Lỗi: Chưa đăng ký lệnh 'shards' trong plugin.yml!");
+        if (!databaseManager.initialize()) {
+            getLogger().severe("Khong the ket noi Database! Tat plugin...");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
         }
 
-        // 5. Đăng ký Sự kiện
+        shardManager = new ShardManager(databaseManager);
+
+        // 2. Register Commands
+        PluginCommand cmd = getCommand("shards");
+        if (cmd != null) cmd.setExecutor(new ShardCommand(this));
+
+        // 3. Register Events
         getServer().getPluginManager().registerEvents(new PlayerKillListener(this), this);
         getServer().getPluginManager().registerEvents(this, this);
 
-        // 6. Hook PlaceholderAPI
+        // 4. PlaceholderAPI Hook
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new ShardPlaceholder(this).register();
         }
 
-        // 7. Start Task AFK
-        long interval = getConfig().getLong("afk.interval-seconds", 300) * 20L;
-        new AfkTask(this).runTaskTimer(this, interval, interval);
+        // 5. Start AFK Task (100 ticks = 5s)
+        afkTask = new AfkTask(this);
+        afkTask.runTaskTimer(this, 100L, 100L);
 
-        getLogger().info("AfkShards v2.0 (Clean Build) loaded!");
+        getLogger().info("AfkShards v2.2-STABLE loaded successfully!");
     }
 
     @Override
     public void onDisable() {
+        if (afkTask != null && !afkTask.isCancelled()) {
+            afkTask.cancel();
+        }
+
         if (shardManager != null) {
             Bukkit.getOnlinePlayers().forEach(p ->
                     shardManager.unload(p.getUniqueId(), p.getName())
             );
         }
+
         if (databaseManager != null) {
             databaseManager.close();
         }
     }
 
-    // IntelliJ sẽ không báo vàng dòng này nữa nhờ SuppressWarnings
+    // Thêm dòng này để IntelliJ hết báo vàng "never used"
     @SuppressWarnings("unused")
     @EventHandler
     public void onJoinAsync(AsyncPlayerPreLoginEvent e) {
-        if (shardManager != null) {
-            shardManager.load(e.getUniqueId());
-        }
+        if (shardManager != null) shardManager.load(e.getUniqueId());
     }
 
     @SuppressWarnings("unused")
@@ -81,6 +83,9 @@ public class Main extends JavaPlugin implements Listener {
     public void onQuit(PlayerQuitEvent e) {
         if (shardManager != null) {
             shardManager.unload(e.getPlayer().getUniqueId(), e.getPlayer().getName());
+        }
+        if (afkTask != null) {
+            afkTask.removePlayer(e.getPlayer().getUniqueId());
         }
     }
 

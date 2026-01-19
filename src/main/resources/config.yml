@@ -1,7 +1,6 @@
-# ==============================================================================
-#      AFK SHARDS - ADVANCED EDITION v2.0
-#      Code optimized by: ThatThingDev
-# ==============================================================================
+# ==========================================================
+# AFK SHARDS v2.2 - OPTIMIZED EDITION
+# ==========================================================
 
 mysql:
   host: "intel.lumine.buzz"
@@ -12,42 +11,42 @@ mysql:
   pool-size: 10
   connection-timeout: 30000
 
-# [AFK REWARD] - Thưởng khi treo máy
-afk:
-  # Thời gian nhận thưởng (giây). 300s = 5 phút.
-  interval-seconds: 300
-  base-amount: 1.0
-  # Rank Booster: Quyền 'shards.booster.<tên>' sẽ được nhân tiền
+afk-system:
+  # Chu kỳ tính thưởng (Nên để 60 giây).
+  # Hệ thống sẽ kiểm tra mỗi 5s để cộng dồn tiến độ.
+  reward-interval: 60
+
+  # CHẾ ĐỘ 1: AFK TRONG VÙNG (Yêu cầu WorldGuard)
+  region-mode:
+    enabled: true
+    regions:
+      - "afk_zone"
+      - "vip_pool"
+    amount: 0.5  # 1 phút nhận 0.5 Shard
+    message: "&a+ %amount% Shards &7(AFK Zone)"
+
+  # CHẾ ĐỘ 2: ONLINE THÔNG THƯỜNG (Global)
+  global-mode:
+    enabled: true
+    amount: 0.1 # 1 phút nhận 0.1 Shard
+    message: "&e+ %amount% Shards &7(Online)"
+
+  # RANK BOOSTER (Áp dụng cho cả 2 chế độ)
   multipliers:
     vip: 1.5
     mvp: 2.0
-    smp_owner: 3.0
 
-# [PVP REWARD] - Thưởng khi giết người
 kill-reward:
   enabled: true
-  # Chặn farm clone trùng IP (BẮT BUỘC BẬT để chống exploit)
   prevent-same-ip: true
-  # Thời gian chờ để nhận thưởng lại từ 1 người (giây). 600s = 10 phút.
   cooldown-seconds: 600
-
   base-amount: 5.0
-  # Thưởng thêm nếu nạn nhân mặc full set giáp này (Khuyến khích giết VIP)
   armor-bonus:
-    LEATHER: 1.0
-    IRON: 3.0
-    DIAMOND: 10.0
     NETHERITE: 20.0
+    DIAMOND: 10.0
 
 messages:
   prefix: "&8[&6AfkShards&8] "
-  no-permission: "&cBạn không có quyền!"
-  balance: "&7Số dư Shards: &e%amount%"
-  afk-receive: "&a+ %amount% Shards &7(Treo máy)"
-  kill-receive: "&a+ %amount% Shards &7(Giết %victim%)"
-  kill-cooldown: "&cChờ &e%time%s &cnữa mới được farm người này!"
-  kill-same-ip: "&cPhát hiện gian lận! Không thưởng khi giết clone trùng IP."
-  admin-set: "&aĐã set Shards của %player% thành %amount%"
-  admin-give: "&aĐã cộng %amount% Shards cho %player%"
-  admin-withdraw: "&aĐã trừ %amount% Shards của %player%"
-  reload: "&aConfig đã được tải lại thành công!"
+  balance: "&7Số dư: &e%amount%"
+  reload: "&aConfig reloaded!"
+  no-permission: "&cKhông có quyền!"
